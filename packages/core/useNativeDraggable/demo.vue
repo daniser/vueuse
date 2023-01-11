@@ -13,10 +13,12 @@ function shuffle(array: Array<any>) {
   return arr
 }
 
-const ipsum = shuffle((
+const lorem = (
   'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do '
 + 'eiusmod tempor incididunt ut labore et dolore magna aliqua'
-).split(' '))
+).split(' ')
+
+const ipsum = ref(lorem)
 
 const dragZoneRef = ref<HTMLElement>()
 const { element } = useNativeDraggable(dragZoneRef, (dataTransfer) => {
@@ -27,10 +29,11 @@ const dropZoneRef = ref<HTMLElement>()
 const { isOverDropZone } = useDropZone(dropZoneRef, (dataTransfer) => {
   if (dropZoneRef.value) {
     let addendum = dataTransfer?.getData('text/plain') ?? ''
+    ipsum.value = ipsum.value.filter(word => word !== addendum)
     if (addendum.length)
       addendum += ' '
     dropZoneRef.value.textContent += addendum
-    element.value?.remove()
+    // element.value?.remove()
   }
 }, false)
 </script>

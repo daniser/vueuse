@@ -3,11 +3,14 @@ import type { MaybeComputedRef } from '@vueuse/shared'
 import { isClient } from '@vueuse/shared'
 import { useEventListener } from '../useEventListener'
 
-export type DropHandler = <T extends DataTransfer | File[] = DataTransfer>(arg: T | null) => void
+// export type DropHandler = <T extends DataTransfer | File[] = DataTransfer>(arg: T | null) => void
+export type DropHandler = (arg: File[] | DataTransfer | null) => void
+export type FileDropHandler = (arg: File[] | null) => void
+export type DataDropHandler = (arg: DataTransfer | null) => void
 
 export function useDropZone(
   target: MaybeComputedRef<HTMLElement | null | undefined>,
-  onDrop?: DropHandler,
+  onDrop?: DataDropHandler,
   filesOnly = true,
 ) {
   const isOverDropZone = ref(false)
@@ -35,10 +38,12 @@ export function useDropZone(
       if (onDrop) {
         if (filesOnly) {
           const files = Array.from(event.dataTransfer?.files ?? [])
-          onDrop<File[]>(files.length === 0 ? null : files)
+          const onFileDrop = onDrop as FileDropHandler
+          onFileDrop(files.length === 0 ? null : files)
         }
         else {
-          onDrop(event.dataTransfer)
+          const onDataDrop = onDrop as DataDropHandler
+          onDataDrop(event.dataTransfer)
         }
       }
     })

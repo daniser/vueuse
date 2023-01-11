@@ -2,19 +2,20 @@ import { ref } from 'vue-demi'
 import type { MaybeComputedRef } from '@vueuse/shared'
 import { useEventListener } from '../useEventListener'
 
+export type DragStartHandler = (dataTransfer: DataTransfer | null) => void
+
 export function useNativeDraggable(
   target: MaybeComputedRef<HTMLElement | null | undefined>,
-  onDragStart?: (dataTransfer: DataTransfer | null) => void,
+  onDragStart?: DragStartHandler,
 ) {
   const element = ref<HTMLElement | null | undefined>()
 
   useEventListener<DragEvent>(target, 'dragstart', (event) => {
-    event.preventDefault()
     element.value = event.target as HTMLElement
     onDragStart?.(event.dataTransfer)
   })
-  useEventListener<DragEvent>(target, 'dragend', (event) => {
-    event.preventDefault()
+
+  useEventListener<DragEvent>(target, 'dragend', () => {
     element.value = null
   })
 
